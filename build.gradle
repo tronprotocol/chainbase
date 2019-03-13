@@ -28,7 +28,6 @@ shadowJar.enabled = false
 
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-mainClassName = 'org.tron.program.FullNode'
 
 publishing {
     publications {
@@ -257,6 +256,12 @@ run {
         standardInput = System.in
         args = ['--witness']
     }
+}
+
+shadowJar {
+    baseName = 'java-tron'
+    classifier = null
+    version = null
 }
 
 test {
