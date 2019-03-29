@@ -40,7 +40,7 @@ apply plugin: "ru.vyarus.animalsniffer"
 apply plugin: "maven"
 apply plugin: "osgi"
 apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "com.github.hierynomus.license"
+//apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
@@ -86,42 +86,42 @@ dependencies {
     compile "org.projectlombok:lombok:$lombokVersion"
 }
 
-javadoc {
-    failOnError = false
-    exclude "**/test/**"
-    options {
-        windowTitle = "Chainbase Javadoc ${project.version}"
-    }
-    // Clear the following options to make the docs consistent with the old format
-    options.addStringOption("top").value = ""
-    options.addStringOption("doctitle").value = ""
-    options.addStringOption("header").value = ""
-    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
-
-    options.links(
-            "https://docs.oracle.com/javase/7/docs/api/"
-    )
-
-    if (JavaVersion.current().isJava7()) {
-        // "./gradle/stylesheet.css" only supports Java 7
-        options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
-    }
-}
+//javadoc {
+//    failOnError = false
+//    exclude "**/test/**"
+//    options {
+//        windowTitle = "Chainbase Javadoc ${project.version}"
+//    }
+//    // Clear the following options to make the docs consistent with the old format
+//    options.addStringOption("top").value = ""
+//    options.addStringOption("doctitle").value = ""
+//    options.addStringOption("header").value = ""
+//    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
+//
+//    options.links(
+//            "https://docs.oracle.com/javase/7/docs/api/"
+//    )
+//
+//    if (JavaVersion.current().isJava7()) {
+//        // "./gradle/stylesheet.css" only supports Java 7
+//        options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
+//    }
+//}
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = "javadoc"
+//    from javadoc.destinationDir
+//}
 
 artifacts {
     archives jar
     archives sourcesJar
-    archives javadocJar
+//    archives javadocJar
 }
 
 jar {
@@ -133,14 +133,14 @@ jar {
         instruction "Eclipse-ExtensibleAPI", "true"
     }
 }
-
-license {
-    header rootProject.file("HEADER")
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    skipExistingHeaders true
-    ignoreFailures true
-    excludes(["**/*.md", "**/*.txt"])
-}
+//
+//license {
+//    header rootProject.file("HEADER")
+//    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+//    skipExistingHeaders true
+//    ignoreFailures true
+//    excludes(["**/*.md", "**/*.txt"])
+//}
 
 apply plugin: "maven-publish"
 
