@@ -1,6 +1,6 @@
 package org.tron.exception;
 
-public class StoreException extends TronException {
+public class StoreException extends Exception {
 
   public StoreException() {
     super();
@@ -12,5 +12,9 @@ public class StoreException extends TronException {
 
   public StoreException(String message, Throwable cause) {
     super(message, cause);
+  }
+
+  public StoreException(Throwable cause) {
+    super(cause);
   }
 }

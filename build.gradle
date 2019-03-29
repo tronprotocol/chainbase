@@ -1,341 +1,373 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
+        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
     }
 }
-plugins {
-    id "org.sonarqube" version "2.6"
+
+group = "com.github.tronprotocol"
+ext.githubProjectName = "chainbase"
+
+version = project.properties["release.version"]
+
+def releaseTag = System.getenv("TRAVIS_TAG");
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1);
+    }
+    version = releaseTag;
+    project.properties.put("release.version", releaseTag);
+
+    println("Releasing with version " + version);
 }
 
-group 'org.tron'
-version '1.0.0'
+description = "chainbase – a decentralized database for blockchain."
 
-apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
-apply plugin: 'application'
-apply plugin: 'checkstyle'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "java-library"
+//apply plugin: "checkstyle"
 apply plugin: "jacoco"
-apply plugin: 'maven-publish'
+apply plugin: "ru.vyarus.animalsniffer"
+apply plugin: "maven"
+apply plugin: "osgi"
+apply plugin: "me.champeau.gradle.jmh"
+apply plugin: "com.github.hierynomus.license"
+apply plugin: "com.jfrog.bintray"
+apply plugin: "com.jfrog.artifactory"
+apply plugin: "eclipse"
 
-jar.enabled = false
-shadowJar.enabled = false
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceCompatibility = 1.8
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+// Dependency versions
+// ---------------------------------------
+
+def junitVersion = "4.12"
+def reactiveStreamsVersion = "1.0.2"
+def mockitoVersion = "2.1.0"
+def jmhLibVersion = "1.20"
+def testNgVersion = "6.11"
+def guavaVersion = "24.1-jre"
+def jacocoVersion = "0.8.0"
+def leveldbVersion = "1.8"
+def logbackVersion = "1.2.3"
+def jansiVersion = "1.16"
+def lombokVersion = "1.18.2"
+def slf4jVersion = "1.7.25"
+// --------------------------------------
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    signature "org.codehaus.mojo.signature:java16:1.1@signature"
+    
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+    testImplementation "org.testng:testng:$testNgVersion"
+
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "org.fusesource.leveldbjni:leveldbjni-all:$leveldbVersion"
+    compile "org.fusesource.jansi:jansi:$jansiVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "org.projectlombok:lombok:$lombokVersion"
+}
+
+javadoc {
+    failOnError = false
+    exclude "**/test/**"
+    options {
+        windowTitle = "Chainbase Javadoc ${project.version}"
+    }
+    // Clear the following options to make the docs consistent with the old format
+    options.addStringOption("top").value = ""
+    options.addStringOption("doctitle").value = ""
+    options.addStringOption("header").value = ""
+    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
+
+    options.links(
+            "https://docs.oracle.com/javase/7/docs/api/"
+    )
+
+    if (JavaVersion.current().isJava7()) {
+        // "./gradle/stylesheet.css" only supports Java 7
+        options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+jar {
+    manifest {
+        name = "chainbase"
+        instruction "Bundle-Vendor", "chainbase Contributors"
+        instruction "Bundle-DocURL", "https://github.com/tronprotocol/chainbase"
+        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
+        instruction "Eclipse-ExtensibleAPI", "true"
+    }
+}
+
+license {
+    header rootProject.file("HEADER")
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    skipExistingHeaders true
+    ignoreFailures true
+    excludes(["**/*.md", "**/*.txt"])
+}
+
+apply plugin: "maven-publish"
+
+install {
+    repositories.mavenInstaller.pom.project {
+        name "chainbase"
+        description "a decentralized database for blockchain"
+        url "https://github.com/tronprotocol/chainbase"
+        licenses {
+            license {
+                name "GNU Lesser General Public License v3.0"
+                url "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+                distribution "repo"
+            }
+        }
+        developers {
+            developer {
+                id "Yrp"
+                name "Matt"
+                email "yrp1990@gmail.com"
+            }
+        }
+        scm {
+            connection "scm:git:git@github.com:tronprotocol/chainbase.git"
+            url "scm:git:git@github.com:tronprotocol/chainbase.git"
+            developerConnection "scm:git:git@github.com:tronprotocol/chainbase.git"
+        }
+        issueManagement {
+            system "github"
+            url "https://github.com/tronprotocol/chainbase/issues"
+        }
+    }
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourceJar
+            artifact (sourcesJar) {
+                classifier = "sources"
+            }
         }
     }
-    repositories {
-        mavenLocal()
+}
+
+// Reactive-Streams as compile dependency
+publishing.publications.all {
+    pom.withXml {
+        asNode().dependencies."*".findAll() {
+            it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+                dep.name == it.artifactId.text()
+            }
+        }.each { it.scope*.value = "compile"}
     }
 }
 
-task sourceJar(type: Jar, dependsOn: classes) {
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url 'http://repo.spring.io/plugins-release' }
-}
-def versions = [
-        checkstyle: '8.7',
-]
-
-jacoco {
-    toolVersion = "0.8.1"
-}
-
-
-configurations {
-    checkstyleConfig
-
-}
-
-configurations.getByName('checkstyleConfig') {
-    transitive = false
-}
-
-static def isWindows() {
-    return org.gradle.internal.os.OperatingSystem.current().isWindows()
-}
-
-if (isWindows()) {
-    ext {
-        leveldbGroup = "org.ethereum"
-        leveldbName = "leveldbjni-all"
-        leveldbVersion = "1.18.3"
-    }
-} else {
-    ext {
-        leveldbGroup = "org.fusesource.leveldbjni"
-        leveldbName = "leveldbjni-all"
-        leveldbVersion = "1.8"
-    }
-}
-
-dependencies {
-    //local libraries
-    compile fileTree(dir: 'libs', include: '*.jar')
-    // end local libraries
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
-    testCompile group: 'org.hamcrest', name: 'hamcrest-junit', version: '1.0.0.1'
-
-    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
-
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.25'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-
-//    compile "org.projectlombok:lombok:1.16.18"
-    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
-
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
-
-    compile "com.madgag.spongycastle:core:1.58.0.0"
-    compile "com.madgag.spongycastle:prov:1.58.0.0"
-
-    compile group: 'com.google.guava', name: 'guava', version: '24.1-jre'
-
-    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.4.0'
-
-    compile "org.iq80.leveldb:leveldb:0.7"
-
-    compile group: leveldbGroup, name: leveldbName, version: leveldbVersion
-
-    compile "org.apache.commons:commons-collections4:4.0"
-
-    compile group: 'com.typesafe', name: 'config', version: '1.3.2'
-
-    compile "com.google.code.findbugs:jsr305:3.0.0"
-
-    compile "com.cedarsoftware:java-util:1.8.0"
-
-    compile "org.apache.commons:commons-lang3:3.4"
-
-    compile group: 'org.springframework', name: 'spring-context', version: '4.2.0.RELEASE'
-    compile group: 'org.springframework', name: 'spring-tx', version: '4.2.0.RELEASE'
-
-    compile group: 'com.beust', name: 'jcommander', version: '1.72'
-
-    compile group: 'junit', name: 'junit', version: '4.12'
-
-    compile group: 'net.jcip', name: 'jcip-annotations', version: '1.0'
-
-    compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.16'
-    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.44'
-
-    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
-
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.5'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.5'
-    compile group: 'org.apache.commons', name: 'commons-math', version: '2.2'
-
-    compile group: 'joda-time', name: 'joda-time', version: '2.3'
-
-    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '3.1.2'
-
-//    checkstyleConfig "com.puppycrawl.tools:checkstyle:${versions.checkstyle}"
-    // google grpc
-    compile group: 'io.grpc', name: 'grpc-netty', version: '1.14.0'
-    compile group: 'io.grpc', name: 'grpc-protobuf', version: '1.14.0'
-    compile group: 'io.grpc', name: 'grpc-stub', version: '1.14.0'
-    // end google grpc
-
-    compile group: 'com.carrotsearch', name: 'java-sizeof', version: '0.0.5'
-
-    compile 'org.aspectj:aspectjrt:1.8.13'
-    compile 'org.aspectj:aspectjweaver:1.8.13'
-    compile 'org.aspectj:aspectjtools:1.8.13'
-    compile 'com.googlecode.cqengine:cqengine:2.12.4'
-    compile group: 'com.google.api.grpc', name: 'googleapis-common-protos', version: '0.0.3'
-
-    // http
-    compile 'org.eclipse.jetty:jetty-server:9.4.11.v20180605'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.11.v20180605'
-    compile 'com.alibaba:fastjson:1.2.47'
-    compile group: 'org.apache.httpcomponents', name:'httpasyncclient', version:'4.1.1'
-    // end http
-
-    compile "io.vavr:vavr:0.9.2"
-    compile group: 'org.pf4j', name: 'pf4j', version: '2.5.0'
-}
-
-check.dependsOn 'lint'
-
-//checkstyle {
-//    toolVersion = "${versions.checkstyle}"
-//    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
+//jmh {
+//    jmhVersion = jmhLibVersion
+//    humanOutputFile = null
+//    includeTests = false
+//    jvmArgs = ["-Djmh.ignoreLock=true"]
+//    jvmArgsAppend = ["-Djmh.separateClasspathJAR=true"]
+//
+//    if (project.hasProperty("jmh")) {
+//        include = ".*" + project.jmh + ".*"
+//        println("JMH: " + include);
+//    }
 //
 //}
-checkstyle {
-    toolVersion = "${versions.checkstyle}"
-    configFile = file("config/checkstyle/checkStyleAll.xml")
-}
 
-
-checkstyleMain {
-    source = 'src/main/java'
-}
-
-task lint(type: Checkstyle) {
-    // Cleaning the old log because of the creation of the new ones (not sure if totaly needed)
-    delete fileTree(dir: "${project.rootDir}/app/build/reports")
-    source 'src'
-    include '**/*.java'
-    exclude 'main/gen/**'
-    exclude 'test/**'
-    // empty classpath
-    classpath = files()
-    //Failing the build
-    ignoreFailures = false
-}
-
-tasks.matching { it instanceof Test }.all {
-    testLogging.events = ["failed", "passed", "skipped"]
-}
-
-if (project.hasProperty("mainClass")) {
-    mainClassName = mainClass
-}
-
-sourceSets {
-    main {
-        proto {
-            srcDir 'src/main/protos'
-        }
-        java {
-            srcDir 'src/main/gen'
-            srcDir 'src/main/java'
-        }
-    }
-
-}
-
-protobuf {
-    generatedFilesBaseDir = "$projectDir/src/"
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.5.1-1"
-    }
-
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.9.0'
-        }
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.builtins {
-                java { outputSubDir = "gen" }
-            }
-        }
-        all()*.plugins {
-            grpc {
-                outputSubDir = "gen"
-            }
-        }
-    }
-}
-
-run {
-    if (project.hasProperty('witness')) {
-        standardInput = System.in
-        args = ['--witness']
-    }
-}
-
-shadowJar {
-    baseName = 'java-tron'
-    classifier = null
-    version = null
-}
+//plugins.withType(EclipsePlugin) {
+//    project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
+//}
 
 test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
-    jacoco {
-        append = true
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
-    }
-}
 
-task stest(type: Test) {
+    testLogging  {
+        // showing skipped occasionally should prevent CI timeout due to lack of standard output
+        events=["skipped", "failed"] // "started", "passed"
+        // showStandardStreams = true
+        exceptionFormat="full"
 
-    useTestNG {
-        suites(file('src/test/resources/testng.xml'))
-        parallel 'tests'
-        threadCount 4
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
 
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
     }
 
-    testLogging {
-        exceptionFormat = 'full'
-        showStackTraces = "true"
-    }
+    maxHeapSize = "1200m"
 
-    jacoco {
-        append = false
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
+    if (System.getenv("CI") == null) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
 }
 
-task dailyBuild(type: Test) {
-    useTestNG {
-        suites(file('src/test/resources/daily-build.xml'))
-        parallel 'tests'
-        threadCount 1
+task testng(type: Test) {
+    useTestNG()
+    testLogging  {
+        events=["skipped", "failed"]
+        exceptionFormat="full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
     }
 }
 
+check.dependsOn testng
+
+jacoco {
+    toolVersion = jacocoVersion // See http://www.eclemma.org/jacoco/.
+}
+
+//task GCandMem(dependsOn: "check") doLast {
+//    print("Memory usage before: ")
+//    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+//    System.gc()
+//    Thread.sleep(200)
+//    print("Memory usage: ")
+//    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+//}
+//
+//task GCandMem2(dependsOn: "test") doLast {
+//    print("Memory usage before: ")
+//    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+//    System.gc()
+//    Thread.sleep(200)
+//    print("Memory usage: ")
+//    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+//}
+//
+//testng.dependsOn GCandMem2
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        csv.enabled false
-        html.destination file("${buildDir}/jacocoHtml")
+        xml.enabled = true
+        html.enabled = true
     }
-    executionData = files('build/jacoco/jacocoTest.exec')
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ["io/reactivex/tck/**"])
+        })
+    }
 }
 
-def binaryRelease(taskName, jarName, mainClass) {
-    return tasks.create("${taskName}", Jar) {
-        baseName = jarName
-        version = null
-        from(sourceSets.main.output) {
-            include "/**"
-        }
+//jacocoTestReport.dependsOn GCandMem
 
-        from {
-            configurations.compile.collect {
-                it.isDirectory() ? it : zipTree(it)
+build.dependsOn jacocoTestReport
+
+//checkstyle {
+//    configFile file("checkstyle.xml")
+//    ignoreFailures = true
+//    toolVersion ="6.19"
+//}
+
+if (rootProject.hasProperty("releaseMode")) {
+
+    if ("branch".equals(rootProject.releaseMode)) {
+        // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
+
+        println("ReleaseMode: " + rootProject.releaseMode);
+        artifactory {
+            contextUrl = "https://oss.jfrog.org"
+
+            publish {
+                repository {
+                    repoKey = "oss-snapshot-local"
+
+                    username = rootProject.bintrayUser
+                    password = rootProject.bintrayKey
+                }
+
+                defaults {
+                    publishConfigs("archives")
+                }
             }
         }
 
-        manifest {
-            attributes "Main-Class": "${mainClass}"
+        build.finalizedBy(artifactoryPublish)
+    }
+
+    if ("full".equals(rootProject.releaseMode)) {
+        // based on https://github.com/bintray/gradle-bintray-plugin
+        def rver = version;
+
+        println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
+
+        bintray {
+            user = rootProject.bintrayUser
+            key = rootProject.bintrayKey
+            configurations = ["archives"]
+            publish = true
+            pkg {
+                repo = "RxJava"
+                name = "RxJava"
+                userOrg = "reactivex"
+                labels = ["rxjava", "reactivex"]
+                licenses = ["Apache-2.0"]
+                vcsUrl = "https://github.com/ReactiveX/RxJava.git"
+                version {
+                    name = rver
+                    gpg {
+                        sign = true
+                    }
+                    mavenCentralSync {
+                        sync = true
+                        user = rootProject.sonatypeUsername
+                        password = rootProject.sonatypePassword
+                        close = "1"
+                    }
+                }
+            }
         }
+
+        build.finalizedBy(bintrayUpload)
     }
 }
 
-artifacts {
-    archives(binaryRelease('buildSolidityNodeJar', 'SolidityNode', 'org.tron.program.SolidityNode'),
-            binaryRelease('buildFullNodeJar', 'FullNode', 'org.tron.program.FullNode'),
-            binaryRelease('buildKeystoreFactoryJar', 'KeystoreFactory', 'org.tron.program.KeystoreFactory'))
-}
+//apply from: file("gradle/javadoc_cleanup.gradle")
