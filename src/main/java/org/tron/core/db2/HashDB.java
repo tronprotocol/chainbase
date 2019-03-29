@@ -3,6 +3,8 @@ package org.tron.core.db2;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.tron.common.Key;
+import org.tron.common.Value;
 
 public class HashDB implements DB<Key, Value> {
   private Map<Key, Value> db = new HashMap<>();

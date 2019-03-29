@@ -13,7 +13,7 @@
  * library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tron.common;
+package org.tron.impl;
 
 import static org.fusesource.leveldbjni.JniDBFactory.factory;
 
@@ -42,6 +42,8 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
+import org.tron.common.DbSourceInter;
+import org.tron.common.StoreIterator;
 import org.tron.utils.FileUtil;
 
 @Slf4j(topic = "DB")

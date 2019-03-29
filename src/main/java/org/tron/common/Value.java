@@ -1,9 +1,8 @@
-package org.tron.core.db2;
+package org.tron.common;
 
 import java.util.Arrays;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.tron.common.WrappedByteArray;
 
 @EqualsAndHashCode(exclude = "operator")
 public final class Value {

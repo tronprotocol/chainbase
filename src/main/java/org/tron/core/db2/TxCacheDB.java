@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.tron.common.Key;
 import org.tron.common.WrappedByteArray;
 
 @Slf4j(topic = "DB")

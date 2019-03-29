@@ -1,8 +1,7 @@
-package org.tron.core.db2;
+package org.tron.common;
 
 import java.util.Arrays;
 import lombok.EqualsAndHashCode;
-import org.tron.common.WrappedByteArray;
 
 @EqualsAndHashCode
 public final class Key {

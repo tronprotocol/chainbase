@@ -6,7 +6,7 @@ import java.util.Map;
 import lombok.Getter;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteOptions;
-import org.tron.common.LevelDbDataSourceImpl;
+import org.tron.impl.LevelDbDataSourceImpl;
 import org.tron.common.WrappedByteArray;
 import org.tron.common.DBIterator;
 
