@@ -345,12 +345,12 @@ if (rootProject.hasProperty("releaseMode")) {
             configurations = ["archives"]
             publish = true
             pkg {
-                repo = "RxJava"
-                name = "RxJava"
-                userOrg = "reactivex"
-                labels = ["rxjava", "reactivex"]
-                licenses = ["Apache-2.0"]
-                vcsUrl = "https://github.com/ReactiveX/RxJava.git"
+                repo = "tron"
+                name = "chainbase"
+                userOrg = "tron.network"
+                labels = ["chainbase"]
+                licenses = ["GNU Lesser General Public License v3.0"]
+                vcsUrl = "https://github.com/tronprotocol/chainbase.git"
                 version {
                     name = rver
                     gpg {
