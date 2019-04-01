@@ -1,4 +1,4 @@
-package org.tron.exception;
+package org.tron.core.exception;
 
 public class ItemNotFoundException extends StoreException {
 
