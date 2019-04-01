@@ -2,7 +2,7 @@ package org.tron.core.db2;
 
 import java.util.Map;
 
-public interface DB<K, V> extends Iterable<Map.Entry<K, V>> {
+public interface DB<K, V> extends Iterable<Map.Entry<K, V>>, Instance<DB<K, V>> {
   V get(K k);
 
   void put(K k, V v);

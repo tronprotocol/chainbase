@@ -9,7 +9,7 @@ import org.tron.impl.LevelDbDataSourceImpl;
 import org.tron.common.WrappedByteArray;
 import org.tron.common.DBIterator;
 
-public class LevelDB implements DB<byte[], byte[]>, Flusher, Instance<LevelDB> {
+public class LevelDB implements DB<byte[], byte[]>, Flusher {
   @Getter
   private LevelDbDataSourceImpl db;
   private WriteOptions writeOptions;
