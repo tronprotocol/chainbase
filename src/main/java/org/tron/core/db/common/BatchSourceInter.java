@@ -16,7 +16,7 @@
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tron.common;
+package org.tron.core.db.common;
 
 import java.util.Map;
 import org.iq80.leveldb.WriteOptions;

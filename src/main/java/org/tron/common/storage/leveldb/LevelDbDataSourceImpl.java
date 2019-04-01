@@ -13,7 +13,7 @@
  * library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tron.impl;
+package org.tron.common.storage.leveldb;
 
 import static org.fusesource.leveldbjni.JniDBFactory.factory;
 
@@ -42,9 +42,9 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
-import org.tron.common.DbSourceInter;
-import org.tron.common.StoreIterator;
-import org.tron.core.db2.Instance;
+import org.tron.core.db.common.DbSourceInter;
+import org.tron.core.db.common.iterator.StoreIterator;
+import org.tron.core.db2.common.Instance;
 import org.tron.utils.FileUtil;
 
 @Slf4j(topic = "DB")
@@ -441,7 +441,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   @Override
-  public org.tron.common.DBIterator iterator() {
+  public org.tron.core.db.common.iterator.DBIterator iterator() {
     return new StoreIterator(database.iterator());
   }
 

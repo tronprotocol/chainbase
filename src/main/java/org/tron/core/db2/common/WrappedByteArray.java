@@ -1,4 +1,4 @@
-package org.tron.common;
+package org.tron.core.db2.common;
 
 import java.util.Arrays;
 import lombok.AccessLevel;

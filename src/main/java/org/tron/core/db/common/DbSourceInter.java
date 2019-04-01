@@ -15,25 +15,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.tron.common;
+package org.tron.core.db.common;
+
+import java.util.Set;
 
 
-import org.iq80.leveldb.WriteOptions;
+public interface DbSourceInter<V> extends BatchSourceInter<byte[], V> {
 
-public interface SourceInter<K, V> {
+  String getDBName();
 
+  void setDBName(String name);
 
-  void putData(K key, V val);
+  void initDB();
 
-  void putData(K k, V v, WriteOptions options);
+  boolean isAlive();
 
-  V getData(K key);
+  void closeDB();
 
+  void resetDb();
 
-  void deleteData(K key);
+  Set<byte[]> allKeys() throws RuntimeException;
 
-  void deleteData(K k, WriteOptions options);
+  Set<byte[]> allValues() throws RuntimeException;
 
-  boolean flush();
+  long getTotal() throws RuntimeException;
 
 }
