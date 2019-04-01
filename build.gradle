@@ -5,13 +5,14 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
         classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
 //        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
+//        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+//        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
     }
 }
 
@@ -20,15 +21,15 @@ ext.githubProjectName = "chainbase"
 
 version = project.properties["release.version"]
 
-def releaseTag = System.getenv("TRAVIS_TAG");
+def releaseTag = System.getenv("TRAVIS_TAG")
 if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
-        releaseTag = releaseTag.substring(1);
+        releaseTag = releaseTag.substring(1)
     }
-    version = releaseTag;
-    project.properties.put("release.version", releaseTag);
+    version = releaseTag
+    project.properties.put("release.version", releaseTag)
 
-    println("Releasing with version " + version);
+    println("Releasing with version " + version)
 }
 
 description = "chainbase – a decentralized database for blockchain."
@@ -37,13 +38,14 @@ apply plugin: "java-library"
 //apply plugin: "checkstyle"
 apply plugin: "jacoco"
 apply plugin: "ru.vyarus.animalsniffer"
-apply plugin: "maven"
-apply plugin: "maven-publish"
+//apply plugin: "maven"
+//apply plugin: "maven-publish"
+apply plugin: "signing"
 apply plugin: "osgi"
 //apply plugin: "me.champeau.gradle.jmh"
 //apply plugin: "com.github.hierynomus.license"
-apply plugin: "com.jfrog.bintray"
-apply plugin: "com.jfrog.artifactory"
+//apply plugin: "com.jfrog.bintray"
+//apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -53,7 +55,6 @@ targetCompatibility = JavaVersion.VERSION_1_8
 // ---------------------------------------
 
 def junitVersion = "4.12"
-def reactiveStreamsVersion = "1.0.2"
 def mockitoVersion = "2.1.0"
 def jmhLibVersion = "1.20"
 def testNgVersion = "6.11"
@@ -143,60 +144,58 @@ jar {
 //    excludes(["**/*.md", "**/*.txt"])
 //}
 
-apply plugin: "maven-publish"
-
-install {
-    repositories.mavenInstaller.pom.project {
-        name "chainbase"
-        description "a decentralized database for blockchain"
-        url "https://github.com/tronprotocol/chainbase"
-        licenses {
-            license {
-                name "GNU Lesser General Public License v3.0"
-                url "https://www.gnu.org/licenses/lgpl-3.0.en.html"
-                distribution "repo"
-            }
-        }
-        developers {
-            developer {
-                id "Yrp"
-                name "Matt"
-                email "yrp1990@gmail.com"
-            }
-        }
-        scm {
-            connection "scm:git:git@github.com:tronprotocol/chainbase.git"
-            url "scm:git:git@github.com:tronprotocol/chainbase.git"
-            developerConnection "scm:git:git@github.com:tronprotocol/chainbase.git"
-        }
-        issueManagement {
-            system "github"
-            url "https://github.com/tronprotocol/chainbase/issues"
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact (sourcesJar) {
-                classifier = "sources"
-            }
-        }
-    }
-}
-
-// Reactive-Streams as compile dependency
-publishing.publications.all {
-    pom.withXml {
-        asNode().dependencies."*".findAll() {
-            it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-                dep.name == it.artifactId.text()
-            }
-        }.each { it.scope*.value = "compile"}
-    }
-}
+//install {
+//    repositories.mavenInstaller.pom.project {
+//        name "chainbase"
+//        description "a decentralized database for blockchain"
+//        url "https://github.com/tronprotocol/chainbase"
+//        licenses {
+//            license {
+//                name "GNU Lesser General Public License v3.0"
+//                url "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+//                distribution "repo"
+//            }
+//        }
+//        developers {
+//            developer {
+//                id "Yrp"
+//                name "Matt"
+//                email "yrp1990@gmail.com"
+//            }
+//        }
+//        scm {
+//            connection "scm:git:git@github.com:tronprotocol/chainbase.git"
+//            url "scm:git:git@github.com:tronprotocol/chainbase.git"
+//            developerConnection "scm:git:git@github.com:tronprotocol/chainbase.git"
+//        }
+//        issueManagement {
+//            system "github"
+//            url "https://github.com/tronprotocol/chainbase/issues"
+//        }
+//    }
+//}
+//
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            from components.java
+//            artifact (sourcesJar) {
+//                classifier = "sources"
+//            }
+//        }
+//    }
+//}
+//
+//
+//publishing.publications.all {
+//    pom.withXml {
+//        asNode().dependencies."*".findAll() {
+//            it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+//                dep.name == it.artifactId.text()
+//            }
+//        }.each { it.scope*.value = "compile"}
+//    }
+//}
 
 //jmh {
 //    jmhVersion = jmhLibVersion
@@ -308,67 +307,121 @@ build.dependsOn jacocoTestReport
 //    toolVersion ="6.19"
 //}
 
-if (rootProject.hasProperty("releaseMode")) {
+//if (rootProject.hasProperty("releaseMode")) {
+//
+//    if ("branch".equals(rootProject.releaseMode)) {
+//        // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
+//
+//        println("ReleaseMode: " + rootProject.releaseMode);
+//        artifactory {
+//            contextUrl = "https://oss.jfrog.org"
+//
+//            publish {
+//                repository {
+//                    repoKey = "oss-snapshot-local"
+//
+//                    username = rootProject.bintrayUser
+//                    password = rootProject.bintrayKey
+//                }
+//
+//                defaults {
+//                    publishConfigs("archives")
+//                }
+//            }
+//        }
+//
+//        build.finalizedBy(artifactoryPublish)
+//    }
+//
+//    if ("full".equals(rootProject.releaseMode)) {
+//        // based on https://github.com/bintray/gradle-bintray-plugin
+//        def rver = version;
+//
+//        println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
+//
+//        bintray {
+//            user = rootProject.bintrayUser
+//            key = rootProject.bintrayKey
+//            configurations = ["archives"]
+//            publish = true
+//            pkg {
+//                repo = "tron"
+//                name = "chainbase"
+//                userOrg = "tron.network"
+//                labels = ["chainbase"]
+//                licenses = ["GNU Lesser General Public License v3.0"]
+//                vcsUrl = "https://github.com/tronprotocol/chainbase.git"
+//                version {
+//                    name = rver
+//                    gpg {
+//                        sign = true
+//                    }
+//                    mavenCentralSync {
+//                        sync = true
+//                        user = rootProject.sonatypeUsername
+//                        password = rootProject.sonatypePassword
+//                        close = "1"
+//                    }
+//                }
+//            }
+//        }
+//
+//        build.finalizedBy(bintrayUpload)
+//    }
+//}
 
-    if ("branch".equals(rootProject.releaseMode)) {
-        // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            groupId project.group
+//            artifactId project.name
+//            version "${version}"
+//            from components.java
+//            artifact sourcesJar
+////            artifact javadocJar
+//
+//            // https://docs.gradle.org/current/dsl/org.gradle.api.publish.maven.MavenPublication.html
+//            repositories.mavenInstaller.pom.project {
+//                name = "chainbase"
+//                description = "a decentralized database for blockchain"
+//                url = "https://github.com/tronprotocol/chainbase"
+//                licenses {
+//                    license {
+//                        name = "GNU Lesser General Public License v3.0"
+//                        url = "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+//                    }
+//                }
+//                developers {
+//                    developer {
+//                        id = "Yrp"
+//                        name = "Matt"
+//                        email = "yrp1990@gmail.com"
+//                    }
+//                }
+//                scm {
+//                    connection = "scm:git:git@github.com:tronprotocol/chainbase.git"
+//                    url = "scm:git:git@github.com:tronprotocol/chainbase.git"
+//                    developerConnection = "scm:git:git@github.com:tronprotocol/chainbase.git"
+//                }
+//            }
+//        }
+//    }
+//    repositories {
+//        maven {
+//            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+//            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+//            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//            credentials {
+//                username = "${sonatypeUsername}"
+//                password = "${sonatypePassword}"
+//            }
+//        }
+//
+//    }
+//}
 
-        println("ReleaseMode: " + rootProject.releaseMode);
-        artifactory {
-            contextUrl = "https://oss.jfrog.org"
-
-            publish {
-                repository {
-                    repoKey = "oss-snapshot-local"
-
-                    username = rootProject.bintrayUser
-                    password = rootProject.bintrayKey
-                }
-
-                defaults {
-                    publishConfigs("archives")
-                }
-            }
-        }
-
-        build.finalizedBy(artifactoryPublish)
-    }
-
-    if ("full".equals(rootProject.releaseMode)) {
-        // based on https://github.com/bintray/gradle-bintray-plugin
-        def rver = version;
-
-        println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
-
-        bintray {
-            user = rootProject.bintrayUser
-            key = rootProject.bintrayKey
-            configurations = ["archives"]
-            publish = true
-            pkg {
-                repo = "tron"
-                name = "chainbase"
-                userOrg = "tron.network"
-                labels = ["chainbase"]
-                licenses = ["GNU Lesser General Public License v3.0"]
-                vcsUrl = "https://github.com/tronprotocol/chainbase.git"
-                version {
-                    name = rver
-                    gpg {
-                        sign = true
-                    }
-                    mavenCentralSync {
-                        sync = true
-                        user = rootProject.sonatypeUsername
-                        password = rootProject.sonatypePassword
-                        close = "1"
-                    }
-                }
-            }
-        }
-
-        build.finalizedBy(bintrayUpload)
-    }
-}
+//signing {
+//    sign publishing.publications.mavenJava
+//}
 
 //apply from: file("gradle/javadoc_cleanup.gradle")
