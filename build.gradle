@@ -7,8 +7,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
-        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+//        classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
+//        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
 //        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
 //        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
@@ -20,32 +20,21 @@ ext.githubProjectName = "chainbase"
 
 version = project.properties["release.version"]
 
-def releaseTag = System.getenv("TRAVIS_TAG")
-if (releaseTag != null && !releaseTag.isEmpty()) {
-    if (releaseTag.startsWith("v")) {
-        releaseTag = releaseTag.substring(1)
-    }
-    version = releaseTag
-    project.properties.put("release.version", releaseTag)
-
-    println("Releasing with version " + version)
-}
-
 description = "chainbase – a decentralized database for blockchain."
 
 apply plugin: "java-library"
 //apply plugin: "checkstyle"
 apply plugin: "jacoco"
-apply plugin: "ru.vyarus.animalsniffer"
+//apply plugin: "ru.vyarus.animalsniffer"
 apply plugin: "maven"
 apply plugin: "maven-publish"
-apply plugin: "signing"
-apply plugin: "osgi"
+//apply plugin: "signing"
+//apply plugin: "osgi"
 //apply plugin: "me.champeau.gradle.jmh"
 //apply plugin: "com.github.hierynomus.license"
 //apply plugin: "com.jfrog.bintray"
 //apply plugin: "com.jfrog.artifactory"
-apply plugin: "eclipse"
+//apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -71,7 +60,7 @@ repositories {
 }
 
 dependencies {
-    signature "org.codehaus.mojo.signature:java16:1.1@signature"
+//    signature "org.codehaus.mojo.signature:java16:1.1@signature"
     
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -125,15 +114,15 @@ artifacts {
 //    archives javadocJar
 }
 
-jar {
-    manifest {
-        name = "chainbase"
-        instruction "Bundle-Vendor", "chainbase Contributors"
-        instruction "Bundle-DocURL", "https://github.com/tronprotocol/chainbase"
-        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
-        instruction "Eclipse-ExtensibleAPI", "true"
-    }
-}
+//jar {
+//    manifest {
+//        name = "chainbase"
+//        instruction "Bundle-Vendor", "chainbase Contributors"
+//        instruction "Bundle-DocURL", "https://github.com/tronprotocol/chainbase"
+//        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
+//        instruction "Eclipse-ExtensibleAPI", "true"
+//    }
+//}
 //
 //license {
 //    header rootProject.file("HEADER")
