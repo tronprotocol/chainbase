@@ -4,20 +4,18 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteOptions;
 import org.tron.impl.LevelDbDataSourceImpl;
 import org.tron.common.WrappedByteArray;
 import org.tron.common.DBIterator;
 
-public class LevelDB implements DB<byte[], byte[]>, Flusher {
+public class LevelDB implements DB<byte[], byte[]>, Flusher, Instance<LevelDB> {
   @Getter
   private LevelDbDataSourceImpl db;
   private WriteOptions writeOptions;
 
-  public LevelDB(String parentName, String name, WriteOptions writeOptions, Options options) {
-    db = new LevelDbDataSourceImpl(parentName, name, options);
-    db.initDB();
+  public LevelDB(LevelDbDataSourceImpl db, WriteOptions writeOptions) {
+    this.db = db;
     this.writeOptions = writeOptions;
   }
 
@@ -66,5 +64,10 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
   @Override
   public void reset() {
     db.resetDb();
+  }
+
+  @Override
+  public LevelDB newInstance() {
+    return new LevelDB(db.newInstance(), writeOptions);
   }
 }

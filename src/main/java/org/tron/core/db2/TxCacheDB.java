@@ -15,7 +15,7 @@ import org.tron.common.Key;
 import org.tron.common.WrappedByteArray;
 
 @Slf4j(topic = "DB")
-public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
+public class TxCacheDB implements DB<byte[], byte[]>, Flusher, Instance<TxCacheDB> {
   // > 65_536(= 2^16) blocks, that is the number of the reference block
   private final int BLOCK_COUNT = 70_000;
 
@@ -92,5 +92,10 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
   public void reset() {
     db.clear();
     blockNumMap.clear();
+  }
+
+  @Override
+  public TxCacheDB newInstance() {
+    return new TxCacheDB();
   }
 }

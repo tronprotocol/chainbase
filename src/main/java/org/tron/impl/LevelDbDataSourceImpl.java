@@ -44,12 +44,13 @@ import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.tron.common.DbSourceInter;
 import org.tron.common.StoreIterator;
+import org.tron.core.db2.Instance;
 import org.tron.utils.FileUtil;
 
 @Slf4j(topic = "DB")
 @NoArgsConstructor
 public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
-    Iterable<Entry<byte[], byte[]>> {
+    Iterable<Entry<byte[], byte[]>>, Instance<LevelDbDataSourceImpl> {
 
   private String dataBaseName;
   private DB database;
@@ -65,6 +66,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     this.parentPath = parentPath;
     this.dataBaseName = dataBaseName;
     this.options = options;
+    initDB();
   }
 
   @Override
@@ -451,4 +453,8 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     return StreamSupport.stream(spliterator(), true);
   }
 
+  @Override
+  public LevelDbDataSourceImpl newInstance() {
+    return new LevelDbDataSourceImpl(parentPath, dataBaseName, options);
+  }
 }
