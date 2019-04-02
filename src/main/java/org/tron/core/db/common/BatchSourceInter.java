@@ -24,8 +24,6 @@ import org.iq80.leveldb.WriteOptions;
 
 public interface BatchSourceInter<K, V> extends SourceInter<K, V> {
 
-
   void updateByBatch(Map<K, V> rows);
 
-  void updateByBatch(Map<K, V> rows, WriteOptions writeOptions);
 }

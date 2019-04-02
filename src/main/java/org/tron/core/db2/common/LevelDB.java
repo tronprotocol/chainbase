@@ -12,11 +12,9 @@ import org.tron.core.db.common.iterator.DBIterator;
 public class LevelDB implements DB<byte[], byte[]>, Flusher {
   @Getter
   private LevelDbDataSourceImpl db;
-  private WriteOptions writeOptions;
 
-  public LevelDB(LevelDbDataSourceImpl db, WriteOptions writeOptions) {
+  public LevelDB(LevelDbDataSourceImpl db) {
     this.db = db;
-    this.writeOptions = writeOptions;
   }
 
   @Override
@@ -59,7 +57,7 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
     Map<byte[], byte[]> rows = batch.entrySet().stream()
         .map(e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes()))
         .collect(HashMap::new, (m, k) -> m.put(k.getKey(), k.getValue()), HashMap::putAll);
-    db.updateByBatch(rows, writeOptions);
+    db.updateByBatch(rows);
   }
 
   @Override
@@ -73,6 +71,6 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
 
   @Override
   public LevelDB newInstance() {
-    return new LevelDB(db.newInstance(), writeOptions);
+    return new LevelDB(db.newInstance());
   }
 }

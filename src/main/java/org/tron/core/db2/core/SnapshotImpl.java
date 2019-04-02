@@ -80,68 +80,6 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
     Streams.stream(fromImpl.db).forEach(e -> db.put(e.getKey(), e.getValue()));
   }
 
-  // we have a 4x4 matrix of all possibilities when merging previous snapshot and current snapshot :
-  //                  --------------------- snapshot ------------------
-  //                 /                                                 \
-  //                +------------+------------+------------+------------+
-  //                | new(Y)     | upd(Y)     | del        | nop        |
-  //   +------------+------------+------------+------------+------------+
-  // / | new(X)     | N/A        | new(Y)     | nop        | new(X)     |
-  // | +------------+------------+------------+------------+------------+
-  // p | upd(X)     | N/A        | upd(Y)     | del        | upd(X)     |
-  // r +------------+------------+------------+------------+------------+
-  // e | del        | upd(Y)     | N/A        | N/A        | del        |
-  // | +------------+------------+------------+------------+------------+
-  // \ | nop        | new(Y)     | upd(Y)     | del        | nop        |
-  //   +------------+------------+------------+------------+------------+
-  public void merge2(Snapshot from) {
-    SnapshotImpl fromImpl = (SnapshotImpl) from;
-
-    Streams.stream(fromImpl.db)
-        .filter(e -> e.getValue().getOperator() == Value.Operator.CREATE)
-        .forEach(e -> {
-          Key k = e.getKey();
-          Value v = e.getValue();
-          Value value = db.get(k);
-          if (value == null) {
-            db.put(k, v);
-          } else if (value.getOperator() == Value.Operator.DELETE) {
-            db.put(k, Value.copyOf(Value.Operator.MODIFY, v.getBytes()));
-          } else {
-            throw new IllegalStateException();
-          }
-        });
-
-    Streams.stream(fromImpl.db)
-        .filter(e -> e.getValue().getOperator() == Value.Operator.MODIFY)
-        .forEach(e -> {
-          Key k = e.getKey();
-          Value v = e.getValue();
-          Value value = db.get(k);
-          if (value == null || value.getOperator() == Value.Operator.MODIFY) {
-            db.put(k, v);
-          } else if (value.getOperator() == Value.Operator.CREATE) {
-            db.put(k, Value.copyOf(Value.Operator.CREATE, v.getBytes()));
-          } else {
-            throw new IllegalStateException();
-          }
-        });
-
-    Streams.stream(fromImpl.db)
-        .filter(e -> e.getValue().getOperator() == Value.Operator.DELETE)
-        .map(Map.Entry::getKey)
-        .forEach(k -> {
-          Value value = db.get(k);
-          if (value == null || value.getOperator() == Value.Operator.MODIFY) {
-            db.put(k, Value.of(Value.Operator.DELETE, null));
-          } else if (value.getOperator() == Value.Operator.CREATE) {
-            db.remove(k);
-          } else {
-            throw new IllegalStateException();
-          }
-  });
-  }
-
   @Override
   public Snapshot retreat() {
     return previous;

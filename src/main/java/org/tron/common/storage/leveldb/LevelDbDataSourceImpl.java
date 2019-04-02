@@ -57,15 +57,17 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   private boolean alive;
   private String parentPath;
   private Options options;
+  private WriteOptions writeOptions;
   private ReadWriteLock resetDbLock = new ReentrantReadWriteLock();
 
   /**
    * constructor.
    */
-  public LevelDbDataSourceImpl(String parentPath, String dataBaseName, Options options) {
+  public LevelDbDataSourceImpl(String parentPath, String dataBaseName, Options options, WriteOptions writeOptions) {
     this.parentPath = parentPath;
     this.dataBaseName = dataBaseName;
     this.options = options;
+    this.writeOptions = writeOptions;
     initDB();
   }
 
@@ -188,17 +190,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   public void putData(byte[] key, byte[] value) {
     resetDbLock.readLock().lock();
     try {
-      database.put(key, value);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
-  public void putData(byte[] key, byte[] value, WriteOptions options) {
-    resetDbLock.readLock().lock();
-    try {
-      database.put(key, value, options);
+      database.put(key, value, writeOptions);
     } finally {
       resetDbLock.readLock().unlock();
     }
@@ -208,17 +200,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   public void deleteData(byte[] key) {
     resetDbLock.readLock().lock();
     try {
-      database.delete(key);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
-  public void deleteData(byte[] key, WriteOptions options) {
-    resetDbLock.readLock().lock();
-    try {
-      database.delete(key, options);
+      database.delete(key, writeOptions);
     } finally {
       resetDbLock.readLock().unlock();
     }
@@ -370,20 +352,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
           batch.put(key, value);
         }
       });
-      database.write(batch);
-    }
-  }
-
-  private void updateByBatchInner(Map<byte[], byte[]> rows, WriteOptions options) throws Exception {
-    try (WriteBatch batch = database.createWriteBatch()) {
-      rows.forEach((key, value) -> {
-        if (value == null) {
-          batch.delete(key);
-        } else {
-          batch.put(key, value);
-        }
-      });
-      database.write(batch, options);
+      database.write(batch, writeOptions);
     }
   }
 
@@ -395,22 +364,6 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     } catch (Exception e) {
       try {
         updateByBatchInner(rows);
-      } catch (Exception e1) {
-        throw new RuntimeException(e);
-      }
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
-  public void updateByBatch(Map<byte[], byte[]> rows, WriteOptions options) {
-    resetDbLock.readLock().lock();
-    try {
-      updateByBatchInner(rows, options);
-    } catch (Exception e) {
-      try {
-        updateByBatchInner(rows, options);
       } catch (Exception e1) {
         throw new RuntimeException(e);
       }
@@ -455,6 +408,6 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
 
   @Override
   public LevelDbDataSourceImpl newInstance() {
-    return new LevelDbDataSourceImpl(parentPath, dataBaseName, options);
+    return new LevelDbDataSourceImpl(parentPath, dataBaseName, options, writeOptions);
   }
 }
