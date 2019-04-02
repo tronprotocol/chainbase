@@ -12,4 +12,6 @@ public interface DB<K, V> extends Iterable<Map.Entry<K, V>>, Instance<DB<K, V>> 
   boolean isEmpty();
 
   void remove(K k);
+
+  String getName();
 }

@@ -71,6 +71,11 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
   }
 
   @Override
+  public String getName() {
+    return null;
+  }
+
+  @Override
   public Iterator<Entry<byte[],byte[]>> iterator() {
     return Iterators.transform(db.entrySet().iterator(),
         e -> Maps.immutableEntry(e.getKey().getBytes(), Longs.toByteArray(e.getValue())));

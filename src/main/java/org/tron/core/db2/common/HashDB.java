@@ -35,6 +35,11 @@ public class HashDB implements DB<Key, Value> {
   }
 
   @Override
+  public String getName() {
+    return null;
+  }
+
+  @Override
   public Iterator<Map.Entry<Key,Value>> iterator() {
     return db.entrySet().iterator();
   }
