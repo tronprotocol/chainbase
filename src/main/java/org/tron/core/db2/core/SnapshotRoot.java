@@ -96,8 +96,8 @@ public class SnapshotRoot extends AbstractSnapshot<byte[], byte[]> {
   }
 
   @Override
-  public String getName() {
-    return db.getName();
+  public String getDbName() {
+    return db.getDbName();
   }
 
   @Override
