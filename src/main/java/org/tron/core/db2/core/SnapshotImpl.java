@@ -23,10 +23,9 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
     root = snapshot.getRoot();
     previous = snapshot;
     snapshot.setNext(this);
-    synchronized (this){
-      db = new HashDB();
+    synchronized (this) {
+      db = new HashDB(SnapshotImpl.class.getSimpleName());
     }
-
   }
 
   @Override
@@ -135,8 +134,8 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
   }
 
   @Override
-  public String getName() {
-    return getRoot().getName();
+  public String getDbName() {
+    return root.getDbName();
   }
 
   @Override

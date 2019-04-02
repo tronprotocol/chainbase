@@ -45,5 +45,5 @@ public interface Snapshot extends Iterable<Map.Entry<byte[], byte[]>>, Instance<
 
   void updateSolidity();
 
-  String getName();
+  String getDbName();
 }

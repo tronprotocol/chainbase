@@ -43,7 +43,7 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
   }
 
   @Override
-  public String getName() {
+  public String getDbName() {
     return db.getDBName();
   }
 

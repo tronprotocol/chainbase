@@ -54,7 +54,7 @@ public class SnapshotManager implements RevokingDatabase {
 
   private volatile int flushCount = 0;
 
-  private Map<IRevokingDB, ListeningExecutorService> flushServices = new HashMap<>();
+  private Map<String, ListeningExecutorService> flushServices = new HashMap<>();
 
   @Setter
   @Getter
@@ -103,7 +103,7 @@ public class SnapshotManager implements RevokingDatabase {
   public void add(IRevokingDB db) {
     RevokingDBWithCachingNewValue revokingDB = (RevokingDBWithCachingNewValue) db;
     dbs.add(revokingDB);
-    flushServices.put(db, MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()));
+    flushServices.put(revokingDB.getDbName(), MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()));
   }
 
   private void advance() {
@@ -238,7 +238,7 @@ public class SnapshotManager implements RevokingDatabase {
   private void refresh() {
     List<ListenableFuture<?>> futures = new ArrayList<>(dbs.size());
     for (RevokingDBWithCachingNewValue db : dbs) {
-      futures.add(flushServices.get(db).submit(() -> refreshOne(db)));
+      futures.add(flushServices.get(db.getDbName()).submit(() -> refreshOne(db)));
     }
     Future<?> future = Futures.allAsList(futures);
     try {
@@ -282,8 +282,8 @@ public class SnapshotManager implements RevokingDatabase {
 
     if (shouldBeRefreshed()) {
       long start = System.currentTimeMillis();
-      deleteCheckPoint();
-      createCheckPoint();
+      deleteCheckpoint();
+      createCheckpoint();
       long checkPointEnd = System.currentTimeMillis();
       refresh();
       flushCount = 0;
@@ -295,7 +295,7 @@ public class SnapshotManager implements RevokingDatabase {
     }
   }
 
-  private void createCheckPoint() {
+  private void createCheckpoint() {
     Map<WrappedByteArray, WrappedByteArray> batch = new HashMap<>();
     for (RevokingDBWithCachingNewValue db : dbs) {
       Snapshot head = db.getHead();
@@ -323,7 +323,7 @@ public class SnapshotManager implements RevokingDatabase {
             .collect(HashMap::new, (m, k) -> m.put(k.getKey(), k.getValue()), HashMap::putAll));
   }
 
-  private void deleteCheckPoint() {
+  private void deleteCheckpoint() {
     Map <byte[], byte[]> hmap = new HashMap<byte[], byte[]>();
     if (!checkpoint.allKeys().isEmpty()) {
       for (Map.Entry<byte[], byte[]> e : checkpoint) {

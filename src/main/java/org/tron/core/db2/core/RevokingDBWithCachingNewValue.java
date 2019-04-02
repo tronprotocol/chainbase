@@ -28,7 +28,7 @@ public class RevokingDBWithCachingNewValue implements IRevokingDB {
   }
 
   public String getDbName() {
-    return head.getRoot().getName();
+    return head.getDbName();
   }
 
   @Override

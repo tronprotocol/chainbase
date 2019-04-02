@@ -6,6 +6,11 @@ import java.util.Map;
 
 public class HashDB implements DB<Key, Value> {
   private Map<Key, Value> db = new HashMap<>();
+  private String name;
+
+  public HashDB(String name) {
+    this.name = name;
+  }
 
   @Override
   public Value get(Key key) {
@@ -33,8 +38,8 @@ public class HashDB implements DB<Key, Value> {
   }
 
   @Override
-  public String getName() {
-    return null;
+  public String getDbName() {
+    return name;
   }
 
   @Override
@@ -44,6 +49,6 @@ public class HashDB implements DB<Key, Value> {
 
   @Override
   public HashDB newInstance() {
-    return new HashDB();
+    return new HashDB(name);
   }
 }

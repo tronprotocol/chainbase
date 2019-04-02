@@ -28,4 +28,9 @@ public abstract class AbstractSnapshot<K, V> implements Snapshot {
   public void setNext(Snapshot next) {
     this.next = new WeakReference<>(next);
   }
+
+  @Override
+  public String getDbName() {
+    return db.getDbName();
+  }
 }

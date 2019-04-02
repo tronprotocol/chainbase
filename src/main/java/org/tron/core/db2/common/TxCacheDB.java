@@ -21,6 +21,11 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
 
   private Map<Key, Long> db = new WeakHashMap<>();
   private Multimap<Long, Key> blockNumMap = ArrayListMultimap.create();
+  private String name;
+
+  public TxCacheDB(String name) {
+    this.name = name;
+  }
 
   @Override
   public byte[] get(byte[] key) {
@@ -71,8 +76,8 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
   }
 
   @Override
-  public String getName() {
-    return null;
+  public String getDbName() {
+    return name;
   }
 
   @Override
@@ -101,6 +106,6 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
 
   @Override
   public TxCacheDB newInstance() {
-    return new TxCacheDB();
+    return new TxCacheDB(name);
   }
 }
