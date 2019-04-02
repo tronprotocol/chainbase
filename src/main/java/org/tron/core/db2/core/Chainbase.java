@@ -16,13 +16,13 @@ import org.tron.core.db2.common.WrappedByteArray;
 import org.tron.core.exception.ItemNotFoundException;
 import org.tron.utils.ByteUtil;
 
-public class RevokingDBWithCachingNewValue implements IRevokingDB {
+public class Chainbase implements IRevokingDB {
 
   //true:fullnode, false:soliditynode
   private ThreadLocal<Boolean> mode = new ThreadLocal<>();
   private Snapshot head;
 
-  public RevokingDBWithCachingNewValue(Snapshot head) {
+  public Chainbase(Snapshot head) {
     this.head  = head;
     mode.set(true);
   }

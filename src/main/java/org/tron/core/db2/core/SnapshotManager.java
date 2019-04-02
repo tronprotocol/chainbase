@@ -39,7 +39,7 @@ public class SnapshotManager implements RevokingDatabase {
   public static final int DEFAULT_MAX_FLUSH_COUNT = 500;
   public static final int DEFAULT_MIN_FLUSH_COUNT = 1;
   @Getter
-  private List<RevokingDBWithCachingNewValue> dbs = new ArrayList<>();
+  private List<Chainbase> dbs = new ArrayList<>();
   @Getter
   private int size = 0;
   private AtomicInteger maxSize = new AtomicInteger(DEFAULT_STACK_MAX_SIZE);
@@ -101,7 +101,7 @@ public class SnapshotManager implements RevokingDatabase {
 
   @Override
   public void add(IRevokingDB db) {
-    RevokingDBWithCachingNewValue revokingDB = (RevokingDBWithCachingNewValue) db;
+    Chainbase revokingDB = (Chainbase) db;
     dbs.add(revokingDB);
     flushServices.put(revokingDB.getDbName(), MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()));
   }
@@ -225,7 +225,7 @@ public class SnapshotManager implements RevokingDatabase {
 
   public void updateSolidity(int hops) {
     for (int i = 0; i < hops; i++) {
-      for (RevokingDBWithCachingNewValue db : dbs) {
+      for (Chainbase db : dbs) {
         db.getHead().updateSolidity();
       }
     }
@@ -237,7 +237,7 @@ public class SnapshotManager implements RevokingDatabase {
 
   private void refresh() {
     List<ListenableFuture<?>> futures = new ArrayList<>(dbs.size());
-    for (RevokingDBWithCachingNewValue db : dbs) {
+    for (Chainbase db : dbs) {
       futures.add(flushServices.get(db.getDbName()).submit(() -> refreshOne(db)));
     }
     Future<?> future = Futures.allAsList(futures);
@@ -250,7 +250,7 @@ public class SnapshotManager implements RevokingDatabase {
     }
   }
 
-  private void refreshOne(RevokingDBWithCachingNewValue db) {
+  private void refreshOne(Chainbase db) {
     if (Snapshot.isRoot(db.getHead())) {
       return;
     }
@@ -297,7 +297,7 @@ public class SnapshotManager implements RevokingDatabase {
 
   private void createCheckpoint() {
     Map<WrappedByteArray, WrappedByteArray> batch = new HashMap<>();
-    for (RevokingDBWithCachingNewValue db : dbs) {
+    for (Chainbase db : dbs) {
       Snapshot head = db.getHead();
       if (Snapshot.isRoot(head)) {
         return;
@@ -337,14 +337,14 @@ public class SnapshotManager implements RevokingDatabase {
   // ensure run this method first after process start.
   @Override
   public void check() {
-    for (RevokingDBWithCachingNewValue db : dbs) {
+    for (Chainbase db : dbs) {
       if (!Snapshot.isRoot(db.getHead())) {
         throw new IllegalStateException("first check.");
       }
     }
 
     if (!checkpoint.allKeys().isEmpty()) {
-      Map<String, RevokingDBWithCachingNewValue> dbMap = dbs.stream()
+      Map<String, Chainbase> dbMap = dbs.stream()
           .map(db -> Maps.immutableEntry(db.getDbName(), db))
           .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
       advance();
