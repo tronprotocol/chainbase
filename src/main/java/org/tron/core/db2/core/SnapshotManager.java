@@ -210,15 +210,6 @@ public class SnapshotManager implements RevokingDatabase {
   public void shutdown() {
     System.err.println("******** begin to pop revokingDb ********");
     System.err.println("******** before revokingDb size:" + size);
-    try {
-      while (shouldBeRefreshed()) {
-        logger.info("waiting leveldb flush done");
-        TimeUnit.MILLISECONDS.sleep(10);
-      }
-    } catch (InterruptedException e) {
-      System.out.println(e.getMessage() + e);
-      Thread.currentThread().interrupt();
-    }
     checkpoint.closeDB();
     System.err.println("******** end to pop revokingDb ********");
   }
