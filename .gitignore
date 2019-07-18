@@ -21,3 +21,26 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# IDEA
+.idea
+*iml
+.DS_Store
+
+# gradle
+.gradle
+build
+
+# log
+logs
+consensus-logs
+
+# lombok
+out
+
+# Eclipse IDE specific files and folders
+/.project
+/.classpath
+/.settings/
+/.apt_generated/
+
