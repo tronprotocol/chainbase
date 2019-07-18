@@ -4,14 +4,15 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import org.tron.common.storage.leveldb.LevelDbDataSourceImpl;
+import org.tron.common.storage.RocksDbDataSourceImpl;
 import org.tron.core.db.common.iterator.DBIterator;
 
-public class LevelDB implements DB<byte[], byte[]>, Flusher {
-  @Getter
-  private LevelDbDataSourceImpl db;
+public class RocksDB implements DB<byte[], byte[]>, Flusher {
 
-  public LevelDB(LevelDbDataSourceImpl db) {
+  @Getter
+  private RocksDbDataSourceImpl db;
+
+  public RocksDB(RocksDbDataSourceImpl db) {
     this.db = db;
   }
 
@@ -42,7 +43,7 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
 
   @Override
   public String getDbName() {
-    return db.getDBName();
+    return null;
   }
 
   @Override
@@ -62,13 +63,14 @@ public class LevelDB implements DB<byte[], byte[]>, Flusher {
   public void close() {
     db.closeDB();
   }
+
   @Override
   public void reset() {
     db.resetDb();
   }
 
   @Override
-  public LevelDB newInstance() {
-    return new LevelDB(db.newInstance());
+  public DB<byte[], byte[]> newInstance() {
+    return new RocksDB(db.newInstance());
   }
 }

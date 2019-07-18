@@ -42,6 +42,7 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
+import org.tron.common.storage.WriteOptionsWrapper;
 import org.tron.core.db.common.DbSourceInter;
 import org.tron.core.db.common.iterator.StoreIterator;
 import org.tron.core.db2.common.Instance;
@@ -197,10 +198,30 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   @Override
+  public void putData(byte[] key, byte[] value, WriteOptionsWrapper options) {
+    resetDbLock.readLock().lock();
+    try {
+      database.put(key, value, options.level);
+    } finally {
+      resetDbLock.readLock().unlock();
+    }
+  }
+
+  @Override
   public void deleteData(byte[] key) {
     resetDbLock.readLock().lock();
     try {
       database.delete(key, writeOptions);
+    } finally {
+      resetDbLock.readLock().unlock();
+    }
+  }
+
+  @Override
+  public void deleteData(byte[] key, WriteOptionsWrapper options) {
+    resetDbLock.readLock().lock();
+    try {
+      database.delete(key, options.level);
     } finally {
       resetDbLock.readLock().unlock();
     }
