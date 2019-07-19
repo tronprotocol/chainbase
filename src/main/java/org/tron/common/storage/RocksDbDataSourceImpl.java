@@ -43,23 +43,19 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
   private String dataBaseName;
   private RocksDB database;
   private boolean alive;
-  private String parentName;
   private String parentPath;
-  private Options options;
-  private WriteOptions writeOptions;
   ReadOptions readOpts;
 
   private ReadWriteLock resetDbLock = new ReentrantReadWriteLock();
 
-  public RocksDbDataSourceImpl(String parentName, String name,Options options ,WriteOptions writeOptions) {
+  public RocksDbDataSourceImpl(String parentPath, String name) {
     this.dataBaseName = name;
-    this.parentName = parentName;
-    this.options = options;
-    this.writeOptions = writeOptions;
+    this.parentPath = parentPath;
+    initDB();
   }
 
   public Path getDbPath() {
-    return Paths.get(parentName, dataBaseName);
+    return Paths.get(parentPath, dataBaseName);
   }
 
   public RocksDB getDatabase() {
@@ -479,6 +475,6 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
 
   @Override
   public RocksDbDataSourceImpl newInstance() {
-    return new RocksDbDataSourceImpl(parentPath, dataBaseName, options, writeOptions);
+    return new RocksDbDataSourceImpl(parentPath, dataBaseName);
   }
 }
