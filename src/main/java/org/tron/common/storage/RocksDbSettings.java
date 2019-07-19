@@ -1,11 +1,14 @@
 package org.tron.common.storage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RocksDbSettings {
 
+  @Setter
+  @Getter
   private static RocksDbSettings settings;
 
   @Getter

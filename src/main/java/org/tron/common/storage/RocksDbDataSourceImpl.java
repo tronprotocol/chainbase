@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.rocksdb.BlockBasedTableConfig;
@@ -31,7 +32,6 @@ import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.PropUtil;
 import org.tron.core.db.common.DbSourceInter;
 import org.tron.core.db.common.iterator.RockStoreIterator;
-import org.tron.common.storage.RocksDbSettings;
 import org.tron.core.db2.common.Instance;
 
 
@@ -46,12 +46,13 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
   private String parentPath;
   ReadOptions readOpts;
 
+
   private ReadWriteLock resetDbLock = new ReentrantReadWriteLock();
 
-  public RocksDbDataSourceImpl(String parentPath, String name) {
+  public RocksDbDataSourceImpl(String parentPath, String name, RocksDbSettings settings) {
     this.dataBaseName = name;
     this.parentPath = parentPath;
-    initDB();
+    RocksDbSettings.setSettings(settings);
   }
 
   public Path getDbPath() {
@@ -475,6 +476,6 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
 
   @Override
   public RocksDbDataSourceImpl newInstance() {
-    return new RocksDbDataSourceImpl(parentPath, dataBaseName);
+    return new RocksDbDataSourceImpl(parentPath, dataBaseName, RocksDbSettings.getSettings());
   }
 }
