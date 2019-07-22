@@ -103,7 +103,6 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
       Files.createDirectories(dbPath.getParent());
     }
     try {
-      System.out.println("wubin"+ );
       database = factory.open(dbPath.toFile(), dbOptions);
     } catch (IOException e) {
       if (e.getMessage().contains("Corruption:")) {
@@ -130,6 +129,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   public Path getDbPath() {
+    System.out.println("wubin"+ parentPath);
     return Paths.get(parentPath, dataBaseName);
   }
 
