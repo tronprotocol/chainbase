@@ -69,6 +69,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     this.dataBaseName = dataBaseName;
     this.options = options;
     this.writeOptions = writeOptions;
+    initDB();
   }
 
   @Override
