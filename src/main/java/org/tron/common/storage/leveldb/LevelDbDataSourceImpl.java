@@ -129,7 +129,6 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   public Path getDbPath() {
-    System.out.println("wubin"+ parentPath);
     return Paths.get(parentPath, dataBaseName);
   }
 

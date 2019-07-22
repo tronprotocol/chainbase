@@ -43,7 +43,7 @@ public class RocksDB implements DB<byte[], byte[]>, Flusher {
 
   @Override
   public String getDbName() {
-    return null;
+    return db.getDBName();
   }
 
   @Override
