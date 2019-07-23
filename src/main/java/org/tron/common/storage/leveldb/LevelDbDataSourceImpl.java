@@ -72,6 +72,11 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     initDB();
   }
 
+  public LevelDbDataSourceImpl(String parentPath, String dataBaseName) {
+    this.parentPath = parentPath;
+    this.dataBaseName = dataBaseName;
+  }
+
   @Override
   public void initDB() {
     resetDbLock.writeLock().lock();
