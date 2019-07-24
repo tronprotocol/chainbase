@@ -75,6 +75,8 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   public LevelDbDataSourceImpl(String parentPath, String dataBaseName) {
     this.parentPath = parentPath;
     this.dataBaseName = dataBaseName;
+    options = new Options();
+    writeOptions = new WriteOptions();
   }
 
   @Override
@@ -203,30 +205,10 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   @Override
-  public void putData(byte[] key, byte[] value, WriteOptionsWrapper options) {
-    resetDbLock.readLock().lock();
-    try {
-      database.put(key, value, options.level);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
   public void deleteData(byte[] key) {
     resetDbLock.readLock().lock();
     try {
       database.delete(key, writeOptions);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
-  public void deleteData(byte[] key, WriteOptionsWrapper options) {
-    resetDbLock.readLock().lock();
-    try {
-      database.delete(key, options.level);
     } finally {
       resetDbLock.readLock().unlock();
     }

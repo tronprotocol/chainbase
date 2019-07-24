@@ -13,6 +13,7 @@ public class WriteOptionsWrapper {
     WriteOptionsWrapper wapper = new WriteOptionsWrapper();
     wapper.level = new org.iq80.leveldb.WriteOptions();
     wapper.rocks = new org.rocksdb.WriteOptions();
+
     return wapper;
   }
 
