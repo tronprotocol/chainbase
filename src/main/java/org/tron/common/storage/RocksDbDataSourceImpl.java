@@ -264,21 +264,6 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
   }
 
   @Override
-  public void putData(byte[] key, byte[] value, WriteOptionsWrapper optionsWrapper) {
-    if (quitIfNotAlive()) {
-      return;
-    }
-    resetDbLock.readLock().lock();
-    try {
-      database.put(optionsWrapper.rocks, key, value);
-    } catch (RocksDBException e) {
-      logger.error("RocksDBException:{}", e);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
   public byte[] getData(byte[] key) {
     if (quitIfNotAlive()) {
       return null;
@@ -302,21 +287,6 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
     resetDbLock.readLock().lock();
     try {
       database.delete(key);
-    } catch (RocksDBException e) {
-      logger.error("RocksDBException:{}", e);
-    } finally {
-      resetDbLock.readLock().unlock();
-    }
-  }
-
-  @Override
-  public void deleteData(byte[] key, WriteOptionsWrapper optionsWrapper) {
-    if (quitIfNotAlive()) {
-      return;
-    }
-    resetDbLock.readLock().lock();
-    try {
-      database.delete(optionsWrapper.rocks, key);
     } catch (RocksDBException e) {
       logger.error("RocksDBException:{}", e);
     } finally {
