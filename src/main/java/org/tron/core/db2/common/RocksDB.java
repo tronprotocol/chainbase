@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import org.tron.common.storage.RocksDbDataSourceImpl;
+import org.tron.common.storage.rocksdb.RocksDbDataSourceImpl;
 import org.tron.core.db.common.iterator.DBIterator;
 
 public class RocksDB implements DB<byte[], byte[]>, Flusher {
