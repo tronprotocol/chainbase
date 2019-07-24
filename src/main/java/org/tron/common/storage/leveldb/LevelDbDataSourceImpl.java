@@ -76,6 +76,7 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
     this.parentPath = parentPath;
     this.dataBaseName = dataBaseName;
     options = new Options();
+    writeOptions = new WriteOptions();
   }
 
   @Override
