@@ -59,6 +59,14 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "org.projectlombok:lombok:$lombokVersion"
     compile group: 'org.rocksdb', name: 'rocksdbjni', version: '5.15.10'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.4.0'
+    compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.4.0'
+    compile group: 'joda-time', name: 'joda-time', version: '2.3'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.2.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version: '4.2.0.RELEASE'
+    compile "org.apache.commons:commons-lang3:3.4"
+    compile "com.madgag.spongycastle:core:1.58.0.0"
+    compile "com.madgag.spongycastle:prov:1.58.0.0"
 }
 
 //javadoc {

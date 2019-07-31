@@ -22,6 +22,8 @@ public class Chainbase implements IRevokingDB {
   private ThreadLocal<Boolean> mode = new ThreadLocal<>();
   private Snapshot head;
 
+  public static Map<String, byte[]> assertsAddress = new HashMap<>(); // key = name , value = address
+
   public Chainbase(Snapshot head) {
     this.head  = head;
     mode.set(true);
