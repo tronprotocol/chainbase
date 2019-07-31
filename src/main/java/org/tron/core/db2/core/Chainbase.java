@@ -14,7 +14,7 @@ import org.tron.core.db2.common.LevelDB;
 import org.tron.core.db2.common.Value;
 import org.tron.core.db2.common.WrappedByteArray;
 import org.tron.core.exception.ItemNotFoundException;
-import org.tron.utils.ByteUtil;
+import org.tron.common.utils.ByteUtil;
 
 public class Chainbase implements IRevokingDB {
 

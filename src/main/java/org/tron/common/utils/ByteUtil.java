@@ -16,7 +16,7 @@
  * along with the ethereumJ library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tron.utils;
+package org.tron.common.utils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedBytes;
