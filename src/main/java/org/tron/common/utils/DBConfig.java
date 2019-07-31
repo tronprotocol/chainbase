@@ -12,15 +12,19 @@ import org.tron.common.storage.rocksdb.RocksDbSettings;
 public class DBConfig {
 
   @Getter
+  @Setter
   private static int dbVersion;
 
   @Getter
+  @Setter
   private static String dbEngine;
 
+  @Getter
   @Setter
   private static String outputDirectory;
 
   @Getter
+  @Setter
   private static Map<String, Property> propertyMap;
 
   @Getter
