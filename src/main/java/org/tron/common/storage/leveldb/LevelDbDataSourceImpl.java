@@ -43,10 +43,10 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.tron.common.storage.WriteOptionsWrapper;
+import org.tron.common.utils.FileUtil;
 import org.tron.core.db.common.DbSourceInter;
 import org.tron.core.db.common.iterator.StoreIterator;
 import org.tron.core.db2.common.Instance;
-import org.tron.utils.FileUtil;
 
 @Slf4j(topic = "DB")
 @NoArgsConstructor
