@@ -1,6 +1,6 @@
 package org.tron.core.store;
 
-import static org.tron.common.utils.Utils.ASSET_ISSUE_COUNT_LIMIT_MAX;
+import static org.tron.common.utils.Commons.ASSET_ISSUE_COUNT_LIMIT_MAX;
 
 import com.google.common.collect.Streams;
 import java.util.List;

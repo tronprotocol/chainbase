@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-@Slf4j(topic = "Utils")
-public class Utils {
+@Slf4j(topic = "Commons")
+public class Commons {
   public static final byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x41;   //41 + address
   public static final int ADDRESS_SIZE = 42;
 
