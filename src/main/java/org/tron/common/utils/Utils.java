@@ -11,6 +11,8 @@ public class Utils {
 
   public static byte addressPreFixByte = ADD_PRE_FIX_BYTE_MAINNET;
 
+  public static final int ASSET_ISSUE_COUNT_LIMIT_MAX = 1000;
+
   public static byte[] clone(byte[] value) {
     byte[] clone = new byte[value.length];
     System.arraycopy(value, 0, clone, 0, value.length);
