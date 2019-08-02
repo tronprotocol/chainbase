@@ -41,7 +41,6 @@ public class Commons {
     return null;
   }
 
-
   public static boolean addressValid(byte[] address) {
     if (ArrayUtils.isEmpty(address)) {
       logger.warn("Warning: Address is empty !!");
