@@ -1,8 +1,12 @@
 package org.tron.common.utils;
 
+import io.opencensus.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tron.core.capsule.AccountCapsule;
+import org.tron.core.exception.BalanceInsufficientException;
+import org.tron.core.store.AccountStore;
 
 @Slf4j(topic = "Commons")
 public class Commons {
@@ -73,5 +77,33 @@ public class Commons {
     }
 
     return address;
+  }
+
+  public static void adjustBalance(AccountStore accountStore, byte[] accountAddress, long amount)
+      throws BalanceInsufficientException {
+    AccountCapsule account = accountStore.getUnchecked(accountAddress);
+    adjustBalance(accountStore, account, amount);
+  }
+
+  public static String createReadableString(byte[] bytes) {
+    return ByteArray.toHexString(bytes);
+  }
+  /**
+   * judge balance.
+   */
+  public static void adjustBalance(AccountStore accountStore, AccountCapsule account, long amount)
+      throws BalanceInsufficientException {
+
+    long balance = account.getBalance();
+    if (amount == 0) {
+      return;
+    }
+
+    if (amount < 0 && balance < -amount) {
+      throw new BalanceInsufficientException(
+          createReadableString(account.createDbKey()) + " insufficient balance");
+    }
+    account.setBalance(Math.addExact(balance, amount));
+    accountStore.put(account.getAddress().toByteArray(), account);
   }
 }
