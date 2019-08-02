@@ -87,12 +87,19 @@ public class DBConfig {
   @Setter
   private static long allowProtoFilterNum;
 
+  @Setter
+  @Getter
+  private static boolean ALLOW_TVM_CONSTANTINOPLE = false;
+
   private static final CompressionType DEFAULT_COMPRESSION_TYPE = CompressionType.SNAPPY;
   private static final int DEFAULT_BLOCK_SIZE = 4 * 1024;
   private static final int DEFAULT_WRITE_BUFFER_SIZE = 10 * 1024 * 1024;
   private static final long DEFAULT_CACHE_SIZE = 10 * 1024 * 1024L;
   private static final int DEFAULT_MAX_OPEN_FILES = 100;
 
+  public static boolean allowTvmConstantinople() {
+    return ALLOW_TVM_CONSTANTINOPLE;
+  }
 
   public static String getOutputDirectoryByDbName(String dbName) {
     String path = getPathByDbName(dbName);
