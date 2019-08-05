@@ -92,6 +92,9 @@ public class DBConfig {
   private static int checkFrozenTime; // for test only
 
   @Setter
+  private static boolean ENERGY_LIMIT_HARD_FORK = false;
+
+  @Setter
   @Getter
   private static boolean ALLOW_TVM_CONSTANTINOPLE = false;
 
@@ -103,6 +106,10 @@ public class DBConfig {
 
   public static boolean allowTvmConstantinople() {
     return ALLOW_TVM_CONSTANTINOPLE;
+  }
+
+  public static boolean getEnergyLimitHardFork() {
+    return ENERGY_LIMIT_HARD_FORK;
   }
 
   public static String getOutputDirectoryByDbName(String dbName) {
