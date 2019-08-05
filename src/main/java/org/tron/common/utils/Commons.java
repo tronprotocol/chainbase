@@ -5,8 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tron.core.capsule.AccountCapsule;
+import org.tron.core.capsule.ExchangeCapsule;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.store.AccountStore;
+import org.tron.core.store.AssetIssueStore;
+import org.tron.core.store.DynamicPropertiesStore;
+import org.tron.core.store.ExchangeStore;
+import org.tron.core.store.ExchangeV2Store;
 
 @Slf4j(topic = "Commons")
 public class Commons {
@@ -104,5 +109,26 @@ public class Commons {
     }
     account.setBalance(Math.addExact(balance, amount));
     accountStore.put(account.getAddress().toByteArray(), account);
+  }
+
+  public static ExchangeStore getExchangeStoreFinal(DynamicPropertiesStore dynamicPropertiesStore, ExchangeStore exchangeStore,
+      ExchangeV2Store exchangeV2Store) {
+    if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
+      return exchangeStore;
+    } else {
+      return exchangeV2Store;
+    }
+  }
+
+  public static void putExchangeCapsule(ExchangeCapsule exchangeCapsule, DynamicPropertiesStore dynamicPropertiesStore, ExchangeStore exchangeStore,
+      ExchangeV2Store exchangeV2Store, AssetIssueStore assetIssueStore) {
+    if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
+      exchangeStore.put(exchangeCapsule.createDbKey(), exchangeCapsule);
+      ExchangeCapsule exchangeCapsuleV2 = new ExchangeCapsule(exchangeCapsule.getData());
+      exchangeCapsuleV2.resetTokenWithID(assetIssueStore, dynamicPropertiesStore);
+      exchangeV2Store.put(exchangeCapsuleV2.createDbKey(), exchangeCapsuleV2);
+    } else {
+      exchangeStore.put(exchangeCapsule.createDbKey(), exchangeCapsule);
+    }
   }
 }
