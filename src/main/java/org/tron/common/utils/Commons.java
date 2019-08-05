@@ -7,6 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.store.AccountStore;
+import org.tron.core.store.DynamicPropertiesStore;
+import org.tron.core.store.ExchangeStore;
+import org.tron.core.store.ExchangeV2Store;
 
 @Slf4j(topic = "Commons")
 public class Commons {
@@ -104,5 +107,14 @@ public class Commons {
     }
     account.setBalance(Math.addExact(balance, amount));
     accountStore.put(account.getAddress().toByteArray(), account);
+  }
+
+  public ExchangeStore getExchangeStoreFinal(DynamicPropertiesStore dynamicPropertiesStore, ExchangeStore exchangeStore,
+      ExchangeV2Store exchangeV2Store ) {
+    if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
+      return exchangeStore;
+    } else {
+      return exchangeV2Store;
+    }
   }
 }
