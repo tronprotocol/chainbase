@@ -9,6 +9,7 @@ import org.tron.core.capsule.ExchangeCapsule;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.store.AccountStore;
 import org.tron.core.store.AssetIssueStore;
+import org.tron.core.store.AssetIssueV2Store;
 import org.tron.core.store.DynamicPropertiesStore;
 import org.tron.core.store.ExchangeStore;
 import org.tron.core.store.ExchangeV2Store;
@@ -129,6 +130,15 @@ public class Commons {
       exchangeV2Store.put(exchangeCapsuleV2.createDbKey(), exchangeCapsuleV2);
     } else {
       exchangeStore.put(exchangeCapsule.createDbKey(), exchangeCapsule);
+    }
+  }
+
+  public static AssetIssueStore getAssetIssueStoreFinal(DynamicPropertiesStore dynamicPropertiesStore,
+      AssetIssueStore assetIssueStore, AssetIssueV2Store assetIssueV2Store) {
+    if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
+      return assetIssueStore;
+    } else {
+      return assetIssueV2Store;
     }
   }
 }
