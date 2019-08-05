@@ -87,6 +87,10 @@ public class DBConfig {
   @Setter
   private static long allowProtoFilterNum;
 
+  @Getter
+  @Setter
+  private static int checkFrozenTime; // for test only
+
   @Setter
   @Getter
   private static boolean ALLOW_TVM_CONSTANTINOPLE = false;
