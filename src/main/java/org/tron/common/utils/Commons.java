@@ -109,7 +109,7 @@ public class Commons {
     accountStore.put(account.getAddress().toByteArray(), account);
   }
 
-  public ExchangeStore getExchangeStoreFinal(DynamicPropertiesStore dynamicPropertiesStore, ExchangeStore exchangeStore,
+  public static ExchangeStore getExchangeStoreFinal(DynamicPropertiesStore dynamicPropertiesStore, ExchangeStore exchangeStore,
       ExchangeV2Store exchangeV2Store ) {
     if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
       return exchangeStore;
