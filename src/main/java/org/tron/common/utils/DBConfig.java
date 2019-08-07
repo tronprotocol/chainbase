@@ -90,6 +90,10 @@ public class DBConfig {
 
   @Getter
   @Setter
+  private static long blockNumForEneryLimit;
+
+  @Getter
+  @Setter
   private static long proposalExpireTime; // (ms)
 
   @Getter
