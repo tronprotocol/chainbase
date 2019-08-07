@@ -29,6 +29,10 @@ public class DBConfig {
 
   @Getter
   @Setter
+  private static GenesisBlock genesisBlock;
+
+  @Getter
+  @Setter
   private static boolean dbSync;
 
   @Getter
