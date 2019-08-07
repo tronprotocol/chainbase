@@ -90,6 +90,10 @@ public class DBConfig {
 
   @Getter
   @Setter
+  private long proposalExpireTime; // (ms)
+
+  @Getter
+  @Setter
   private static long allowProtoFilterNum;
 
   @Getter
