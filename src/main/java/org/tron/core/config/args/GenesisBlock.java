@@ -1,11 +1,10 @@
-package org.tron.common.utils;
+package org.tron.core.config.args;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
-import org.tron.protos.Protocol.Account;
-import org.tron.protos.Protocol.Witness;
+
 
 public class GenesisBlock implements Serializable {
 
