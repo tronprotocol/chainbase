@@ -1,14 +1,17 @@
 package org.tron.common.utils;
 
-import io.opencensus.internal.StringUtil;
+import static org.tron.common.utils.Hash.sha3omit12;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.math.ec.ECPoint;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.ExchangeCapsule;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.store.AccountStore;
 import org.tron.core.store.AssetIssueStore;
+import org.tron.core.store.AssetIssueV2Store;
 import org.tron.core.store.DynamicPropertiesStore;
 import org.tron.core.store.ExchangeStore;
 import org.tron.core.store.ExchangeV2Store;
@@ -131,4 +134,23 @@ public class Commons {
       exchangeStore.put(exchangeCapsule.createDbKey(), exchangeCapsule);
     }
   }
+
+  public static AssetIssueStore getAssetIssueStoreFinal(DynamicPropertiesStore dynamicPropertiesStore,
+      AssetIssueStore assetIssueStore, AssetIssueV2Store assetIssueV2Store) {
+    if (dynamicPropertiesStore.getAllowSameTokenName() == 0) {
+      return assetIssueStore;
+    } else {
+      return assetIssueV2Store;
+    }
+  }
+
+  public static byte[] computeAddress(ECPoint pubPoint) {
+    return computeAddress(pubPoint.getEncoded(/* uncompressed */ false));
+  }
+
+  public static byte[] computeAddress(byte[] pubBytes) {
+    return sha3omit12(
+        Arrays.copyOfRange(pubBytes, 1, pubBytes.length));
+  }
+
 }
