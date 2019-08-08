@@ -110,22 +110,4 @@ public class ForkUtils {
       }
     }
   }
-
-  public static ForkUtils instance() {
-    return ForkControllerEnum.INSTANCE.getInstance();
-  }
-
-  private enum ForkControllerEnum {
-    INSTANCE;
-
-    private ForkUtils instance;
-
-    ForkControllerEnum() {
-      instance = new ForkUtils();
-    }
-
-    private ForkUtils getInstance() {
-      return instance;
-    }
-  }
 }
