@@ -51,7 +51,7 @@ public class ForkUtils {
   // when block.version = 5,
   // it make block use new energy to handle transaction when block number >= 4727890L.
   // version !=5, skip this.
-  private boolean checkForEnergyLimit() {
+  protected boolean checkForEnergyLimit() {
     long blockNum = dynamicPropertiesStore.getLatestBlockHeaderNumber();
     return blockNum >= DBConfig.getBlockNumForEneryLimit();
   }
